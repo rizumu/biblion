@@ -1,9 +1,19 @@
 from django.contrib import admin
 from django.utils.functional import curry
 
-from biblion.models import Post, Image
+from biblion.models import Blog, Post, Image
 from biblion.forms import AdminPostForm
 from biblion.utils import can_tweet
+
+
+class BlogAdmin(admin.ModelAdmin):
+    list_display = ["title", "active_flag", "site"]
+    prepopulated_fields = {"slug": ("title",)}
+
+    def active_flag(self, obj):
+        return bool(obj.active)
+    active_flag.short_description = "Active"
+    active_flag.boolean = True
 
 
 class ImageInline(admin.TabularInline):
@@ -12,7 +22,7 @@ class ImageInline(admin.TabularInline):
 
 
 class PostAdmin(admin.ModelAdmin):  
-    list_display = ["title", "published_flag", "section"]
+    list_display = ["blog", "title", "published_flag", "section"]
     list_filter = ["section"]
     form = AdminPostForm
     fields = [
@@ -56,5 +66,6 @@ class PostAdmin(admin.ModelAdmin):
         return form.save()
 
 
+admin.site.register(Blog, BlogAdmin)
 admin.site.register(Post, PostAdmin)
 admin.site.register(Image)

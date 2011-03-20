@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 from django.utils.translation import ugettext as _
 
+from django.contrib.sites.managers import CurrentSiteManager
 from django.contrib.sites.models import Site
 
 try:
@@ -18,9 +19,52 @@ try:
 except ImportError:
     twitter = None
 
-from biblion.managers import PostManager
+from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
 from biblion.utils import can_tweet
+
+
+class Blog(models.Model):
+    
+    site = models.ForeignKey(Site, default=settings.SITE_ID, verbose_name=_("site"))
+    
+    title = models.CharField(_("title"), max_length=90)
+    slug = models.SlugField()
+    maintainers = models.ManyToManyField(User, related_name=_("blogs"), verbose_name=_("maintainers"))
+    
+    subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
+        help_text="Looks best if only a few words, like a tagline.")
+    description = models.TextField(_("description"), max_length=4000, help_text=_("""
+        This is your chance to tell potential subscribers all about your blog.
+        Describe your subject matter, media format, post schedule, and other
+        relevant info so that they know what they'll be getting when they
+        subscribe. In addition, make a list of the most relevant search terms
+        that you want your blog to match, then build them into your
+        description. This field can be up to 4000 characters."""), blank=True)
+    
+    feedburner = models.URLField(_("feedburner url"), blank=True,
+        help_text=_("""Fill this out after saving this show and at least one
+        episode. URL should look like "http://feeds.feedburner.com/TitleOfShow".
+        <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
+    
+    default_author = models.ForeignKey(User, verbose_name=_("default author"), default=None, blank=True, null=True)
+    posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
+    
+    created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
+    updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)
+    active = models.BooleanField(_("active"), default=True)
+    
+    objects = BlogManager()
+    on_site = CurrentSiteManager()
+    
+    class Meta:
+        ordering = ("site", "active", "title")
+        unique_together = ("title", "site")
+        verbose_name = _("blog")
+        verbose_name_plural = _("blogs")
+    
+    def __unicode__(self):
+        return u"%s" % (self.title)
 
 
 def ig(L, i):
@@ -30,13 +74,16 @@ def ig(L, i):
 
 class Post(models.Model):
     
+    blog = models.ForeignKey(Blog, related_name=_("posts"))
+    
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
     
     section = models.IntegerField(_("section"), choices=SECTION_CHOICES)
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    author = models.ForeignKey(User, related_name="posts", verbose_name=_('author'))
+    
+    author = models.ForeignKey(User, related_name="posts", verbose_name=_("author"))
     
     teaser_html = models.TextField(_("teaser html"), editable=False)
     content_html = models.TextField(_("content html"), editable=False)
@@ -58,7 +105,7 @@ class Post(models.Model):
         verbose_name_plural = _("posts")
     
     def __unicode__(self):
-        return self.title
+        return u"%s" % (self.title)
     
     @staticmethod
     def section_idx(slug):
@@ -83,11 +130,15 @@ class Post(models.Model):
         return self.revisions.get(pk=rev_id)
     
     def current(self):
-        "the currently visible (latest published) revision"
+        """
+        the currently visible (latest published) revision
+        """
         return self.revisions.exclude(published=None).order_by("-published")[0]
     
     def latest(self):
-        "the latest modified (even if not published) revision"
+        """
+        the latest modified (even if not published) revision
+        """
         try:
             return self.revisions.order_by("-updated")[0]
         except IndexError:
@@ -95,7 +146,10 @@ class Post(models.Model):
     
     def as_tweet(self):
         if not self.tweet_text:
-            current_site = Site.objects.get_current()
+            if self.blog.site:
+                current_site = self.blog.site
+            else:
+                current_site = Site.objects.get_current()
             api_url = "http://api.tr.im/api/trim_url.json"
             u = urllib2.urlopen("%s?url=http://%s%s" % (
                 api_url,
@@ -149,26 +203,26 @@ class Post(models.Model):
 
 class Revision(models.Model):
     
-    post = models.ForeignKey(Post, related_name="revisions", verbose_name=_('post'))
+    post = models.ForeignKey(Post, related_name="revisions", verbose_name=_("post"))
     
     title = models.CharField(_("title"), max_length=90)
     teaser = models.TextField(_("teaser"), )
     
     content = models.TextField(_("content"), )
     
-    author = models.ForeignKey(User, related_name="revisions", verbose_name=_('author'))
+    author = models.ForeignKey(User, related_name="revisions", verbose_name=_("author"))
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
-
+    
     class Meta:
         verbose_name = _("revision")
         verbose_name_plural = _("revisions")
     
     def __unicode__(self):
-        return 'Revision %s for %s' % (self.updated.strftime('%Y%m%d-%H%M'), self.post.slug)
+        return u"Revision %s for %s" % (self.updated.strftime("%Y%m%d-%H%M"), self.post.slug)
     
     def inc_views(self):
         self.view_count += 1
@@ -177,7 +231,7 @@ class Revision(models.Model):
 
 class Image(models.Model):
     
-    post = models.ForeignKey(Post, related_name="images", verbose_name=_('post'))
+    post = models.ForeignKey(Post, related_name="images", verbose_name=_("post"))
     
     image_path = models.ImageField(_("image path"), upload_to="images/%Y/%m/%d")
     url = models.CharField(_("url"), max_length=150, blank=True)
@@ -187,19 +241,19 @@ class Image(models.Model):
     class Meta:
         verbose_name = _("image")
         verbose_name_plural = _("images")
-
+    
     def __unicode__(self):
         if self.pk is not None:
-            return "{{ %d }}" % self.pk
+            return u"{{ %d }}" % self.pk
         else:
-            return "deleted image"
+            return u"deleted image"
 
 
 class FeedHit(models.Model):
     
     request_data = models.TextField(_("request data"))
     created = models.DateTimeField(_("created"), default=datetime.now)
-
+    
     class Meta:
         verbose_name = _("feed hit")
         verbose_name_plural = _("feed hits")

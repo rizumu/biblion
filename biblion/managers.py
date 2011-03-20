@@ -5,6 +5,12 @@ from biblion.exceptions import InvalidSection
 from biblion.settings import ALL_SECTION_NAME
 
 
+class BlogManager(models.Manager):
+
+    def active(self):
+        return self.exclude(active=None)
+
+
 class PostManager(models.Manager):
     
     def published(self):
