@@ -9,6 +9,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
+from django.utils.translation import ugettext as _
 
 from django.contrib.sites.models import Site
 
@@ -32,22 +33,22 @@ class Post(models.Model):
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
     
-    section = models.IntegerField(choices=SECTION_CHOICES)
+    section = models.IntegerField(_("section"), choices=SECTION_CHOICES)
     
-    title = models.CharField(max_length=90)
+    title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    author = models.ForeignKey(User, related_name="posts")
+    author = models.ForeignKey(User, related_name="posts", verbose_name=_('author'))
     
-    teaser_html = models.TextField(editable=False)
-    content_html = models.TextField(editable=False)
+    teaser_html = models.TextFi ld(_("teaser html"), editable=False)
+    content_html = models.TextFie d(_("content html"), editable=False)
     
-    tweet_text = models.CharField(max_length=140, editable=False)
+    tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
-    created = models.DateTimeField(default=datetime.now, editable=False) # when first revision was created
-    updated = models.DateTimeField(null=True, blank=True, editable=False) # when last revision was create (even if not published)
-    published = models.DateTimeField(null=True, blank=True, editable=False) # when last published
+    created = models.DateTimeField(_("created"), default=datetime.now, editable=False) # when first revision was created
+    updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False) # when last revision was create (even if not published)
+    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
     
-    view_count = models.IntegerField(default=0, editable=False)
+    view_count = models.IntegerField(_("view count"), default=0, editable=False)
     
     @staticmethod
     def section_idx(slug):
@@ -83,8 +84,10 @@ class Post(models.Model):
             return None
     
     class Meta:
-        ordering = ("-published",)
         get_latest_by = "published"
+        ordering = ("-published",)
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
     
     objects = PostManager()
     
@@ -147,22 +150,26 @@ class Post(models.Model):
 
 class Revision(models.Model):
     
-    post = models.ForeignKey(Post, related_name="revisions")
+    post = models.ForeignKey(Post, related_name="revisions", verbose_name=_('post'))
     
-    title = models.CharField(max_length=90)
-    teaser = models.TextField()
+    title = models.CharField(_("title"), max_length=90)
+    teaser = models.TextField(_("teaser"), )
     
-    content = models.TextField()
+    content = models.TextField(_("content"), )
     
-    author = models.ForeignKey(User, related_name="revisions")
+    author = models.ForeignKey(User, related_name="revisions", verbose_name=_('author'))
     
-    updated = models.DateTimeField(default=datetime.now)
-    published = models.DateTimeField(null=True, blank=True)
+    updated = models.DateTimeField(_("updated"), default=datetime.now)
+    published = models.DateTimeField(_("published"), null=True, blank=True)
     
-    view_count = models.IntegerField(default=0, editable=False)
+    view_count = models.IntegerField(_("view count"), default=0, editable=False)
     
     def __unicode__(self):
         return 'Revision %s for %s' % (self.updated.strftime('%Y%m%d-%H%M'), self.post.slug)
+
+    class Meta:
+        verbose_name = _("revision")
+        verbose_name_plural = _("revisions")
     
     def inc_views(self):
         self.view_count += 1
@@ -171,13 +178,18 @@ class Revision(models.Model):
 
 class Image(models.Model):
     
-    post = models.ForeignKey(Post, related_name="images")
+    post = models.ForeignKey(Post, related_name="images", verbose_name=_('post'))
     
-    image_path = models.ImageField(upload_to="images/%Y/%m/%d")
-    url = models.CharField(max_length=150, blank=True)
+    image_path = models.ImageField(_("image path"), upload_to="images/%Y/%m/%d")
+    url = models.CharField(_("url"), max_length=150, blank=True)
     
-    timestamp = models.DateTimeField(default=datetime.now, editable=False)
+    timestamp = models.DateTimeField(_("timestamp"), default=datetime.now, editable=False)
     
+    class Meta:
+        verbose_name = _("image")
+        verbose_name_plural = _("images")
+
+
     def __unicode__(self):
         if self.pk is not None:
             return "{{ %d }}" % self.pk
@@ -186,6 +198,9 @@ class Image(models.Model):
 
 class FeedHit(models.Model):
     
-    request_data = models.TextField()
-    created = models.DateTimeField(default=datetime.now)
+    request_data = models.TextField(_("request data"))
+    created = models.DateTimeField(_("created"), default=datetime.now)
 
+    class Meta:
+        verbose_name = _("feed hit")
+        verbose_name_plural = _("feed hits")
