@@ -23,7 +23,6 @@ from biblion.settings import ALL_SECTION_NAME, SECTIONS
 from biblion.utils import can_tweet
 
 
-
 def ig(L, i):
     for x in L:
         yield x[i]
@@ -49,6 +48,17 @@ class Post(models.Model):
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
+    
+    objects = PostManager()
+    
+    class Meta:
+        get_latest_by = "published"
+        ordering = ("-published",)
+        verbose_name = _("post")
+        verbose_name_plural = _("posts")
+    
+    def __unicode__(self):
+        return self.title
     
     @staticmethod
     def section_idx(slug):
@@ -82,17 +92,6 @@ class Post(models.Model):
             return self.revisions.order_by("-updated")[0]
         except IndexError:
             return None
-    
-    class Meta:
-        get_latest_by = "published"
-        ordering = ("-published",)
-        verbose_name = _("post")
-        verbose_name_plural = _("posts")
-    
-    objects = PostManager()
-    
-    def __unicode__(self):
-        return self.title
     
     def as_tweet(self):
         if not self.tweet_text:
@@ -163,13 +162,13 @@ class Revision(models.Model):
     published = models.DateTimeField(_("published"), null=True, blank=True)
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
-    
-    def __unicode__(self):
-        return 'Revision %s for %s' % (self.updated.strftime('%Y%m%d-%H%M'), self.post.slug)
 
     class Meta:
         verbose_name = _("revision")
         verbose_name_plural = _("revisions")
+    
+    def __unicode__(self):
+        return 'Revision %s for %s' % (self.updated.strftime('%Y%m%d-%H%M'), self.post.slug)
     
     def inc_views(self):
         self.view_count += 1
@@ -189,12 +188,12 @@ class Image(models.Model):
         verbose_name = _("image")
         verbose_name_plural = _("images")
 
-
     def __unicode__(self):
         if self.pk is not None:
             return "{{ %d }}" % self.pk
         else:
             return "deleted image"
+
 
 class FeedHit(models.Model):
     
