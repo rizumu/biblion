@@ -19,7 +19,7 @@ except ImportError:
 
 from biblion.managers import PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
-from biblion.utils import can_tweet
+from biblion.utils.twitter import can_tweet
 
 
 
@@ -31,6 +31,8 @@ def ig(L, i):
 class Post(models.Model):
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
+    markup_types = ["HTML", "Creole", "Markdown", "reStructuredText", "Textile"]
+    MARKUP_CHOICES = zip(range(1, len(markup_types)), markup_types)
     
     section = models.IntegerField(choices=SECTION_CHOICES)
     
@@ -38,8 +40,9 @@ class Post(models.Model):
     slug = models.SlugField()
     author = models.ForeignKey(User, related_name="posts")
     
-    teaser_html = models.TextField(editable=False)
-    content_html = models.TextField(editable=False)
+    teaser = models.TextField(editable=False)
+    content = models.TextField(editable=False)
+    markup_type = models.IntegerField(choices=MARKUP_CHOICES, default=1)
     
     tweet_text = models.CharField(max_length=140, editable=False)
     

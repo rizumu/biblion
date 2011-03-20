@@ -2,9 +2,8 @@ from datetime import datetime
 
 from django import forms
 
-from biblion.creole_parser import parse, BiblionHtmlEmitter
 from biblion.models import Post, Revision
-from biblion.utils import can_tweet
+from biblion.utils.twitter import can_tweet
 
 
 class AdminPostForm(forms.ModelForm):
@@ -60,7 +59,7 @@ class AdminPostForm(forms.ModelForm):
             # @@@ can a post be unpublished then re-published? should be pulled
             # from latest revision maybe?
             self.fields["publish"].initial = bool(post.published)
-        
+    
     def save(self):
         post = super(AdminPostForm, self).save(commit=False)
         
@@ -72,8 +71,8 @@ class AdminPostForm(forms.ModelForm):
                 if self.cleaned_data["publish"]:
                     post.published = datetime.now()
         
-        post.teaser_html = parse(self.cleaned_data["teaser"], emitter=BiblionHtmlEmitter)
-        post.content_html = parse(self.cleaned_data["content"], emitter=BiblionHtmlEmitter)
+        post.teaser = self.cleaned_data["teaser"]
+        post.content = self.cleaned_data["content"]
         post.updated = datetime.now()
         post.save()
         
