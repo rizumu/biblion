@@ -38,8 +38,8 @@ class Post(models.Model):
     slug = models.SlugField()
     author = models.ForeignKey(User, related_name="posts", verbose_name=_('author'))
     
-    teaser_html = models.TextFi ld(_("teaser html"), editable=False)
-    content_html = models.TextFie d(_("content html"), editable=False)
+    teaser_html = models.TextField(_("teaser html"), editable=False)
+    content_html = models.TextField(_("content html"), editable=False)
     
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
