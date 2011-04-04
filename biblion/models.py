@@ -86,7 +86,7 @@ class Post(models.Model):
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
     
-    author = models.ForeignKey(User, related_name="posts", verbose_name=_("author"))
+    authors = models.ManyToManyField(User, related_name="posts", verbose_name=_("authors"))
     teaser = models.TextField(_("teaser"), editable=False)
     content = models.TextField(_("content"), editable=False)
     
@@ -212,7 +212,7 @@ class Revision(models.Model):
     
     content = models.TextField(_("content"), )
     
-    author = models.ForeignKey(User, related_name="revisions", verbose_name=_("author"))
+    authors = models.ManyToManyField(User, related_name="revisions", verbose_name=_("authors"))
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)
