@@ -2,9 +2,13 @@ from django import template
 
 from biblion.models import Post
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
+from biblion.utils.code_hilite import to_html
 
 
 register = template.Library()
+
+
+register.filter("to_html", to_html)
 
 
 class LatestBlogPostsNode(template.Node):

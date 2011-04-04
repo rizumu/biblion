@@ -3,7 +3,7 @@ from django.utils.functional import curry
 
 from biblion.models import Blog, Post, Image
 from biblion.forms import AdminPostForm
-from biblion.utils import can_tweet
+from biblion.utils.twitter import can_tweet
 
 
 class BlogAdmin(admin.ModelAdmin):
@@ -32,6 +32,7 @@ class PostAdmin(admin.ModelAdmin):
         "author",
         "teaser",
         "content",
+        "markup_type",
         "publish",
     ]
     if can_tweet():

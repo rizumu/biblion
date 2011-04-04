@@ -1,4 +1,4 @@
-# -*- coding: utf8 -*-
+# -*- coding: utf-8 -*-
 import urllib2
 
 from datetime import datetime
@@ -21,7 +21,7 @@ except ImportError:
 
 from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
-from biblion.utils import can_tweet
+from biblion.utils.twitter import can_tweet
 
 
 class Blog(models.Model):
@@ -77,6 +77,9 @@ class Post(models.Model):
     blog = models.ForeignKey(Blog, related_name=_("posts"))
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
+    markup_types = ["HTML", "Creole", "Markdown", "reStructuredText", "Textile"]
+    MARKUP_CHOICES = zip(range(1, len(markup_types)), markup_types)
+    markup_type = models.IntegerField(choices=MARKUP_CHOICES, default=1)
     
     section = models.IntegerField(_("section"), choices=SECTION_CHOICES)
     
@@ -84,9 +87,8 @@ class Post(models.Model):
     slug = models.SlugField()
     
     author = models.ForeignKey(User, related_name="posts", verbose_name=_("author"))
-    
-    teaser_html = models.TextField(_("teaser html"), editable=False)
-    content_html = models.TextField(_("content html"), editable=False)
+    teaser = models.TextField(_("teaser"), editable=False)
+    content = models.TextField(_("content"), editable=False)
     
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
