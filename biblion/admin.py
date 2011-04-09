@@ -19,7 +19,7 @@ class PostAdmin(admin.ModelAdmin):
         "section",
         "title",
         "slug",
-        "author",
+        "authors",
         "teaser",
         "content",
         "publish",
@@ -38,7 +38,7 @@ class PostAdmin(admin.ModelAdmin):
     
     def formfield_for_dbfield(self, db_field, **kwargs):
         request = kwargs.pop("request")
-        if db_field.name == "author":
+        if db_field.name == "authors":
             ff = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
             ff.initial = request.user.id
             return ff
