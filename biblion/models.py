@@ -26,7 +26,7 @@ from biblion.utils.twitter import can_tweet
 
 class Blog(models.Model):
     
-    site = models.ForeignKey(Site, default=settings.SITE_ID, verbose_name=_("site"))
+    site = models.ForeignKey(Site, related_name=("blogs"), default=settings.SITE_ID, verbose_name=_("site"))
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
