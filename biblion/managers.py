@@ -1,17 +1,21 @@
-from django.db import models
 from django.db.models.query import Q
+
+from django.contrib.sites.models import Site
 
 from biblion.exceptions import InvalidSection
 from biblion.settings import ALL_SECTION_NAME
 
 
-class BlogManager(models.Manager):
+class BlogManager(object):
 
     def active(self):
         return self.exclude(active=None)
 
+    def onsite(self):
+        return self.filter(site=Site.objects.get_current())
 
-class PostManager(models.Manager):
+
+class PostManager(object):
     
     def published(self):
         return self.exclude(published=None)
@@ -19,10 +23,13 @@ class PostManager(models.Manager):
     def current(self):
         return self.published().order_by("-published")
     
+    def onsite(self):
+        return self.filter(blog__site=Site.objects.get_current())
+    
     def section(self, value, queryset=None):
         
         if queryset is None:
-            queryset = self.published().filter(blog=self.blog)
+            queryset = self.published()
         
         if not value:
             return queryset

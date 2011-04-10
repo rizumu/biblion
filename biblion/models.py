@@ -21,6 +21,7 @@ except ImportError:
 
 from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
+from biblion.utils.db import manager_from
 from biblion.utils.twitter import can_tweet
 
 
@@ -54,7 +55,7 @@ class Blog(models.Model):
     updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)
     active = models.BooleanField(_("active"), default=True)
     
-    objects = BlogManager()
+    objects = manager_from(BlogManager)
     on_site = CurrentSiteManager()
     
     class Meta:
@@ -101,7 +102,7 @@ class Post(models.Model):
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
     
-    objects = PostManager()
+    objects = manager_from(PostManager)
     
     class Meta:
         get_latest_by = "published"
