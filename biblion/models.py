@@ -32,7 +32,7 @@ class Post(models.Model):
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
     markup_types = ["HTML", "Creole", "Markdown", "reStructuredText", "Textile"]
-    MARKUP_CHOICES = zip(range(1, len(markup_types)), markup_types)
+    MARKUP_CHOICES = zip(range(1, 1 + len(markup_types)), markup_types)
     
     section = models.IntegerField(choices=SECTION_CHOICES)
     
