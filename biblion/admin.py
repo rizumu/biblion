@@ -23,6 +23,7 @@ class PostAdmin(admin.ModelAdmin):
         "teaser",
         "content",
         "publish",
+        "comments",
     ]
     if can_tweet():
         fields.append("tweet")

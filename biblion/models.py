@@ -48,6 +48,7 @@ class Post(models.Model):
     published = models.DateTimeField(null=True, blank=True, editable=False) # when last published
     
     view_count = models.IntegerField(default=0, editable=False)
+    comments = models.BooleanField(_("comments"), default=True)
     
     @staticmethod
     def section_idx(slug):
