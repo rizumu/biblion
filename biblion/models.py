@@ -78,7 +78,7 @@ class Post(models.Model):
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
     markup_types = ["HTML", "Creole", "Markdown", "reStructuredText", "Textile"]
-    MARKUP_CHOICES = zip(range(1, len(markup_types)), markup_types)
+    MARKUP_CHOICES = zip(range(1, 1 + len(markup_types)), markup_types)
     markup_type = models.IntegerField(choices=MARKUP_CHOICES, default=1)
     
     section = models.IntegerField(_("section"), choices=SECTION_CHOICES)
