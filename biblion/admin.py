@@ -26,6 +26,7 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ["section"]
     form = AdminPostForm
     fields = [
+        "blog",
         "section",
         "title",
         "slug",
@@ -51,7 +52,7 @@ class PostAdmin(admin.ModelAdmin):
         request = kwargs.pop("request")
         if db_field.name == "authors":
             ff = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-            ff.initial = request.user.id
+            ff.initial = [request.user.id]
             return ff
         return super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
     
