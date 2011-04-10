@@ -101,6 +101,7 @@ class Post(models.Model):
     published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
+    comments = models.BooleanField(_("comments"), default=True)
     
     objects = manager_from(PostManager)
     
