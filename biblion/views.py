@@ -41,7 +41,7 @@ def blog_detail(request, blog_slug):
     }, context_instance=RequestContext(request))
 
 
-def blog_section_list(request, section):
+def blog_section_list(request, blog_slug, section):
     
     try:
         posts = Post.objects.section(section)
@@ -55,7 +55,7 @@ def blog_section_list(request, section):
     }, context_instance=RequestContext(request))
 
 
-def blog_post_detail(request, **kwargs):
+def blog_post_detail(request, blog_slug, **kwargs):
     
     if "post_pk" in kwargs:
         if request.user.is_authenticated() and request.user.is_staff:
