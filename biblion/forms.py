@@ -82,9 +82,11 @@ class AdminPostForm(forms.ModelForm):
         r.title = post.title
         r.teaser = self.cleaned_data["teaser"]
         r.content = self.cleaned_data["content"]
-        r.author = post.author
+
         r.updated = post.updated
         r.published = post.published
+        r.save() # must save to set pk before adding a m2m field
+        r.authors = post.authors.all()
         r.save()
         
         if can_tweet() and self.cleaned_data["tweet"]:
