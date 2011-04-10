@@ -10,15 +10,33 @@ from django.utils import simplejson as json
 from django.contrib.sites.models import Site
 
 from biblion.exceptions import InvalidSection
-from biblion.models import Post, FeedHit
+from biblion.models import Blog, Post, FeedHit
 from biblion.settings import ALL_SECTION_NAME
 
 
-def blog_index(request):
+def blog_list(request, site_id=None, **kwargs):
+    """
+    All active blogs for a given site, current_site if unspecified.
+    """
+    if site_id == None:
+        site = Site.objects.get_current()
+    else:
+        site = Site.objects.get(id=site_id)
+    context = {
+        "blogs": Blog.objects.active().filter(site=site)
+    }
+    context.update(kwargs)
+    return render_to_response("biblion/blog_list.html", context,
+        context_instance=RequestContext(request))
+
+
+def blog_detail(request, blog_slug):
+    """ All published posts for a given blog. """
+   
+    blog = Blog.objects.get(slug=blog_slug)
+    posts = Post.objects.current().filter(blog=blog).exclude(published=None)
     
-    posts = Post.objects.current()
-    
-    return render_to_response("biblion/blog_list.html", {
+    return render_to_response("biblion/blog_detail.html", {
         "posts": posts,
     }, context_instance=RequestContext(request))
 
@@ -55,7 +73,7 @@ def blog_post_detail(request, **kwargs):
         post = get_object_or_404(queryset, slug=kwargs["slug"])
         post.inc_views()
     
-    return render_to_response("biblion/blog_post.html", {
+    return render_to_response("biblion/blog_post_detail.html", {
         "post": post,
     }, context_instance=RequestContext(request))
 

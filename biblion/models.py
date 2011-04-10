@@ -66,6 +66,9 @@ class Blog(models.Model):
     def __unicode__(self):
         return u"%s" % (self.title)
 
+    def get_absolute_url(self):
+        return reverse("blog_detail", kwargs={"blog_slug": self.slug})
+
 
 def ig(L, i):
     for x in L:
@@ -77,6 +80,9 @@ class Post(models.Model):
     blog = models.ForeignKey(Blog, related_name=_("posts"))
     
     SECTION_CHOICES = [(1, ALL_SECTION_NAME)] + zip(range(2, 2 + len(SECTIONS)), ig(SECTIONS, 1))
+    markup_types = ["HTML", "Creole", "Markdown", "reStructuredText", "Textile"]
+    MARKUP_CHOICES = zip(range(1, len(markup_types)), markup_types)
+    markup_type = models.IntegerField(choices=MARKUP_CHOICES, default=1)
     
     section = models.IntegerField(_("section"), choices=SECTION_CHOICES)
     
