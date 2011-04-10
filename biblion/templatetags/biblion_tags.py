@@ -92,3 +92,12 @@ def blog_sections(parser, token):
     """
     bits = token.split_contents()
     return BlogSectionsNode(bits[2])
+
+
+def show_post_brief(context, post):
+    return {
+        "post": post,
+        "last": context["forloop"]["last"],
+        "can_edit": context["user"] in post.blog.maintainers.all(),
+    }
+register.inclusion_tag("biblion/_post_brief.html", takes_context=True)(show_post_brief)
