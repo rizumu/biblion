@@ -198,6 +198,7 @@ class Post(models.Model):
             kwargs = {
                 "post_pk": self.pk,
             }
+        kwargs["blog_slug"] = self.blog.slug
         return reverse(name, kwargs=kwargs)
     
     def inc_views(self):

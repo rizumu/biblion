@@ -22,7 +22,7 @@ class PostManager(models.Manager):
     def section(self, value, queryset=None):
         
         if queryset is None:
-            queryset = self.published()
+            queryset = self.published().filter(blog=self.blog)
         
         if not value:
             return queryset
