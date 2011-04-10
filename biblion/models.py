@@ -89,8 +89,8 @@ class Post(models.Model):
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    
     authors = models.ManyToManyField(User, related_name="posts", verbose_name=_("authors"))
+    
     teaser = models.TextField(_("teaser"), editable=False)
     content = models.TextField(_("content"), editable=False)
     
