@@ -66,6 +66,9 @@ class Blog(models.Model):
     def __unicode__(self):
         return u"%s" % (self.title)
 
+    def get_absolute_url(self):
+        return reverse("blog_detail", kwargs={"blog_slug": self.slug})
+
 
 def ig(L, i):
     for x in L:
