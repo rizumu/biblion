@@ -19,11 +19,11 @@ def blog_list(request, site_id=None, **kwargs):
     All active blogs for a given site, current_site if unspecified.
     """
     if site_id == None:
-        site = Site.objects.get_current()
+        blogs = Blog.objects.active().onsite()
     else:
-        site = Site.objects.get(id=site_id)
+        blogs = Blog.objects.active().filter(id=site_id)
     context = {
-        "blogs": Blog.objects.active().filter(site=site)
+        "blogs": blogs,
     }
     context.update(kwargs)
     return render_to_response("biblion/blog_list.html", context,
@@ -44,7 +44,7 @@ def blog_detail(request, blog_slug):
 def blog_section_list(request, blog_slug, section):
     
     try:
-        posts = Post.objects.section(section)
+        posts = Post.objects.onsite().section(section)
     except InvalidSection:
         raise Http404()
     
