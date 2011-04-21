@@ -24,6 +24,7 @@ def blog_list(request, site_id=None, **kwargs):
         blogs = Blog.objects.active().filter(id=site_id)
     context = {
         "blogs": blogs,
+        "posts": Post.objects.current().filter(blog__in=blogs),
     }
     context.update(kwargs)
     return render_to_response("biblion/blog_list.html", context,
