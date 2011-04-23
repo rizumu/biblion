@@ -82,7 +82,7 @@ class LatestPostBaseFeed(Feed):
         return None
     
     def icon(self, obj):
-        retun None
+        return None
     
     def logo(self, obj):
         return None

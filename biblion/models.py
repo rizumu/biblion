@@ -54,7 +54,7 @@ class Blog(models.Model):
     
     license = LicenseField(related_name=_("blogs"))
     
-    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("author"))
+    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"))
     contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
@@ -99,7 +99,8 @@ class Post(models.Model):
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("author"))
+
+    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"))
     contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     teaser_html = models.TextField(_("teaser html"), editable=False)
