@@ -35,8 +35,8 @@ class Blog(models.Model):
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    maintainers = models.ManyToManyField(User, related_name=_("blogs"), verbose_name=_("maintainers"))
-
+    maintainers = models.ManyToManyField(User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"))
+    
     subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
         help_text="Looks best if only a few words, like a tagline.")
     description = models.TextField(_("description"), max_length=4000, help_text=_("""
@@ -54,7 +54,9 @@ class Blog(models.Model):
     
     license = LicenseField(related_name=_("blogs"))
     
-    default_author = models.ForeignKey(User, verbose_name=_("default author"), default=None, blank=True, null=True)
+    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"))
+    contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
+    
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
     
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
@@ -72,7 +74,7 @@ class Blog(models.Model):
     
     def __unicode__(self):
         return u"%s" % (self.title)
-
+    
     def get_absolute_url(self):
         return reverse("blog_detail", kwargs={"blog_slug": self.slug})
 
@@ -97,11 +99,13 @@ class Post(models.Model):
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    authors = models.ManyToManyField(User, related_name="posts", verbose_name=_("authors"))
     
+    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"))
+    contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
+
     teaser = models.TextField(_("teaser"), editable=False)
     content = models.TextField(_("content"), editable=False)
-    
+
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
     license = LicenseField(related_name=_("posts"))
@@ -228,7 +232,8 @@ class Revision(models.Model):
     
     content = models.TextField(_("content"), )
     
-    authors = models.ManyToManyField(User, related_name="revisions", verbose_name=_("authors"))
+    authors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"))
+    contributors = models.ManyToManyField(User, related_name="revisions_contributorss", verbose_name=_("authors"))
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)
