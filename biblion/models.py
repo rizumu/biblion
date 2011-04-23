@@ -145,14 +145,14 @@ class Post(models.Model):
         """
         the currently visible (latest published) revision
         """
-        return self.revisions.exclude(published=None).order_by("-published")[0]
+        return self.revisions.exclude(published=None).latest("published")
     
     def latest(self):
         """
         the latest modified (even if not published) revision
         """
         try:
-            return self.revisions.order_by("-updated")[0]
+            return self.revisions.latest("updated")
         except IndexError:
             return None
     
