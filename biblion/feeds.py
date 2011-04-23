@@ -103,9 +103,10 @@ class LatestPostRSSFeed(LatestPostBaseFeed):
     def docs(self):
         return "http://blogs.law.harvard.edu/tech/rss"
     
-    def item_description(self, obj):
+    def item_description(self, item):
         return item.teaser
-
+    
+    # TODO: determine best way to select language for a multi-language site.
     #def language(self, obj):
 
 class LatestPostAtomFeed(LatestPostBaseFeed):
