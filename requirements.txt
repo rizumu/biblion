@@ -4,6 +4,7 @@ docutils==0.7
 markdown==2.0.3
 Pygments==1.4
 textile==2.1.4
+django-licenses==0.2.3
 
 # optional
 python-twitter==0.8.1

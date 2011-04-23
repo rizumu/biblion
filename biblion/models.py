@@ -18,6 +18,7 @@ try:
     import twitter
 except ImportError:
     twitter = None
+from licenses.fields import LicenseField
 
 from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
@@ -35,7 +36,7 @@ class Blog(models.Model):
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
     maintainers = models.ManyToManyField(User, related_name=_("blogs"), verbose_name=_("maintainers"))
-    
+
     subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
         help_text="Looks best if only a few words, like a tagline.")
     description = models.TextField(_("description"), max_length=4000, help_text=_("""
@@ -50,6 +51,8 @@ class Blog(models.Model):
         help_text=_("""Fill this out after saving this show and at least one
         episode. URL should look like "http://feeds.feedburner.com/TitleOfShow".
         <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
+    
+    license = LicenseField(related_name=_("blogs"))
     
     default_author = models.ForeignKey(User, verbose_name=_("default author"), default=None, blank=True, null=True)
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
@@ -100,6 +103,8 @@ class Post(models.Model):
     content = models.TextField(_("content"), editable=False)
     
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
+    
+    license = LicenseField(related_name=_("posts"))
     
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False) # when first revision was created
     updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False) # when last revision was create (even if not published)

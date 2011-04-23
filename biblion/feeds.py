@@ -55,16 +55,19 @@ class LatestPostBaseFeed(Feed):
     def generator(self):
         return "Django Web Framework"
     
+    def guid(self, obj):
+        return obj.pk
+
+    def copyright(self, obj):
+        return "{0} {1} {2}".format(obj.license.name, obj.license.url,
+            datetime.date.today().year)
+    
     # TODO: Support the following `feed` tags
     #def author(self, obj):
     #def category(self, obj):
     #def contributor(self, obj):
     #def icon(self, obj):
     #def logo(self, obj):
-    # install django-licenses and add a fk
-    #def rights(self, obj):
-    #    return "{0} {1} {2}".format(obj.license.name, obj.license.url,
-    #        datetime.date.today().year)
     
     def item_title(self, item):
         return item.title
@@ -85,15 +88,17 @@ class LatestPostBaseFeed(Feed):
     def item_updated(self, item):
         return item.updated
     
+    def item_guid(self, item):
+        return item.pk
+
+    def item_copyright(self, item):
+        return "{0} {1} {2}".format(item.license.name, item.license.url,
+            datetime.date.today().year)
+
     # TODO: Support the following `entry` tags
-    #def item_guid(self, item):
     #def item_author(self, item):
     #def item_category(self, item):
     #def item_contributor(self, item):
-    # install django-licenses and add a fk
-    #def item_rights(self, item):
-    #    return "{0} {1} {2}".format(item.license.name, item.license.url,
-    #        datetime.date.today().year)
     
 
 class LatestPostRSSFeed(LatestPostBaseFeed):
