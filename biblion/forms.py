@@ -4,7 +4,7 @@ from django import forms
 
 from biblion.creole_parser import parse, BiblionHtmlEmitter
 from biblion.models import Post, Revision
-from biblion.utils import can_tweet
+from biblion.utils.twitter import can_tweet
 
 
 class AdminPostForm(forms.ModelForm):
