@@ -1,16 +1,13 @@
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
-from django.template.loader import render_to_string
-from django.utils import simplejson as json
 
 from django.contrib.sites.models import Site
 
 from biblion.exceptions import InvalidSection
-from biblion.models import Blog, Post, FeedHit
+from biblion.models import Blog, Post
 from biblion.settings import ALL_SECTION_NAME
 
 
@@ -77,58 +74,3 @@ def blog_post_detail(request, blog_slug, **kwargs):
     return render_to_response("biblion/blog_post_detail.html", {
         "post": post,
     }, context_instance=RequestContext(request))
-
-
-def serialize_request(request):
-    data = {
-        "path": request.path,
-        "META": {
-            "QUERY_STRING": request.META.get("QUERY_STRING"),
-            "REMOTE_ADDR": request.META.get("REMOTE_ADDR"),
-        }
-    }
-    for key in request.META:
-        if key.startswith("HTTP"):
-            data["META"][key] = request.META[key]
-    return json.dumps(data)
-
-
-def blog_feed(request, section=None):
-    
-    try:
-        posts = Post.objects.section(section)
-    except InvalidSection:
-        raise Http404()
-    
-    if section is None:
-        section = ALL_SECTION_NAME
-    
-    current_site = Site.objects.get_current()
-    
-    feed_title = "%s Blog: %s" % (current_site.name, section[0].upper() + section[1:])
-    
-    blog_url = "http://%s%s" % (current_site.domain, reverse("blog"))
-    
-    url_name, kwargs = "blog_feed", {"section": section}
-    feed_url = "http://%s%s" % (current_site.domain, reverse(url_name, kwargs=kwargs))
-    
-    if posts:
-        feed_updated = posts[0].published
-    else:
-        feed_updated = datetime(2009, 8, 1, 0, 0, 0)
-    
-    # create a feed hit
-    hit = FeedHit()
-    hit.request_data = serialize_request(request)
-    hit.save()
-    
-    atom = render_to_string("biblion/atom_feed.xml", {
-        "feed_id": feed_url,
-        "feed_title": feed_title,
-        "blog_url": blog_url,
-        "feed_url": feed_url,
-        "feed_updated": feed_updated,
-        "entries": posts,
-        "current_site": current_site,
-    })
-    return HttpResponse(atom, mimetype="application/atom+xml")
