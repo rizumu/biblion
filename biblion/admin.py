@@ -26,10 +26,11 @@ class PostAdmin(admin.ModelAdmin):
     list_filter = ["section"]
     form = AdminPostForm
     fields = [
+        "blog",
         "section",
         "title",
         "slug",
-        "author",
+        "authors",
         "teaser",
         "content",
         "publish",
@@ -47,10 +48,10 @@ class PostAdmin(admin.ModelAdmin):
     published_flag.boolean = True
     
     def formfield_for_dbfield(self, db_field, **kwargs):
-        request = kwargs.pop("request")
-        if db_field.name == "author":
+        request = kwargs["request"]
+        if db_field.name == "authors":
             ff = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
-            ff.initial = request.user.id
+            ff.initial = [request.user.id]
             return ff
         return super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
     

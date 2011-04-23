@@ -103,8 +103,6 @@ class Post(models.Model):
     authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("author"))
     contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
-    author = models.ForeignKey(User, related_name="posts", verbose_name=_("author"))
-    
     teaser_html = models.TextField(_("teaser html"), editable=False)
     content_html = models.TextField(_("content html"), editable=False)
     
@@ -233,7 +231,8 @@ class Revision(models.Model):
     
     content = models.TextField(_("content"), )
     
-    author = models.ForeignKey(User, related_name="revisions", verbose_name=_("author"))
+    authors = models.ManyToManyField(User, related_name="revisions_contributors", verbose_name=_("authors"))
+    contributors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"))
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)
