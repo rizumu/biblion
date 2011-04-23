@@ -233,7 +233,7 @@ class Revision(models.Model):
     content = models.TextField(_("content"), )
     
     authors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"))
-    contributors = models.ManyToManyField(User, related_name="revisions_contributorss", verbose_name=_("authors"))
+    contributors = models.ManyToManyField(User, related_name="revisions_contributorss", verbose_name=_("authors"), null=True, blank=True)
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)

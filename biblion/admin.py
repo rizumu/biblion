@@ -32,6 +32,7 @@ class PostAdmin(admin.ModelAdmin):
         "slug",
         "authors",
         "contributors",
+        "license",
         "teaser",
         "content",
         "markup_type",
@@ -39,7 +40,7 @@ class PostAdmin(admin.ModelAdmin):
         "comments",
     ]
     if can_tweet():
-        fields.append("tweet")
+        fields.append("tweet_text")
     prepopulated_fields = {"slug": ("title",)}
     inlines = [
         ImageInline,
