@@ -23,9 +23,12 @@ from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
 from biblion.utils.db import manager_from
 from biblion.utils.twitter import can_tweet
+from biblion.utils.fields import UUIDField
 
 
 class Blog(models.Model):
+    
+    id = UUIDField(_("id"), primary_key=True)
     
     site = models.ForeignKey(Site, related_name=_("blogs"), default=settings.SITE_ID, verbose_name=_("site"))
     
@@ -77,6 +80,8 @@ def ig(L, i):
 
 
 class Post(models.Model):
+    
+    id = UUIDField(_("id"), primary_key=True)
     
     blog = models.ForeignKey(Blog, related_name=_("posts"))
     
