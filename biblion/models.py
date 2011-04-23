@@ -54,7 +54,6 @@ class Blog(models.Model):
     
     license = LicenseField(related_name=_("blogs"))
     
-    default_author = models.ForeignKey(User, verbose_name=_("default author"), blank=True, null=True)
     authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("author"))
     contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
 
