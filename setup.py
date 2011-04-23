@@ -22,6 +22,14 @@ setup(
             "templates/biblion/*.xml",
         ]
     },
+    install_requires=[
+        "creole==1.2",
+        "docutils==0.7",
+        "markdown==2.0.3",
+        "Pygments==1.4",
+        "textile==2.1.4",
+        "django-licenses==0.2.3",
+    ],
     classifiers = [
         "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
