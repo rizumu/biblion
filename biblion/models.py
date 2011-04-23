@@ -36,7 +36,7 @@ class Blog(models.Model):
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
     maintainers = models.ManyToManyField(User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"))
-
+    
     subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
         help_text="Looks best if only a few words, like a tagline.")
     description = models.TextField(_("description"), max_length=4000, help_text=_("""
@@ -56,7 +56,7 @@ class Blog(models.Model):
     
     authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("author"))
     contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
-
+    
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
     
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
@@ -74,7 +74,7 @@ class Blog(models.Model):
     
     def __unicode__(self):
         return u"%s" % (self.title)
-
+    
     def get_absolute_url(self):
         return reverse("blog_detail", kwargs={"blog_slug": self.slug})
 
