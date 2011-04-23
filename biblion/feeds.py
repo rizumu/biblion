@@ -23,9 +23,9 @@ def serialize_request(request):
     return json.dumps(data)
 
 
-class LatestPostRSSFeed(Feed):
+class LatestPostBaseFeed(Feed):
     """
-    Feed of the latest 10 posts.
+    Base Feed of the latest 10 posts.
     """
     def get_object(self, request, blog_slug, site=Site.objects.get_current()):
         if request:
@@ -34,29 +34,88 @@ class LatestPostRSSFeed(Feed):
             hit.request_data = serialize_request(request)
             hit.save()
         return get_object_or_404(Blog, slug=blog_slug, site=site)
-
-    def title(self, obj):
-        return "%s feed" % obj
-
-    def description(self, obj):
-        return obj.description
-
-    def link(self, obj):
-        return reverse("blog_detail", args=[obj.slug])
     
     def items(self, obj):
         return Post.objects.published().filter(blog=obj)[:10]
+    
+    def title(self, obj):
+        return "%s feed" % obj
+    
+    def updated(self, obj):
+        latest_post = Post.objects.filter(blog=obj).latest()
+        return latest_post.published
+    
+    def link(self, obj):
+        # TODO support hreflang
+        return reverse("blog_detail", args=[obj.slug])
+    
+    def description(self, obj):
+        return obj.subtitle
+    
+    def generator(self):
+        return "Django Web Framework"
+    
+    # TODO: Support the following `feed` tags
+    #def author(self, obj):
+    #def category(self, obj):
+    #def contributor(self, obj):
+    #def icon(self, obj):
+    #def logo(self, obj):
+    # install django-licenses and add a fk
+    #def rights(self, obj):
+    #    return "{0} {1} {2}".format(obj.license.name, obj.license.url,
+    #        datetime.date.today().year)
+    
+    def item_title(self, item):
+        return item.title
+    
+    def item_link(self, item):
+        # TODO support hreflang
+        return item.get_absolute_url()
+    
+    def content(self, item):
+        return item.content
+    
+    def item_link(self, item):
+        return item.get_absolute_url()
+    
+    def item_pubdate(self, item):
+        return item.published
+    
+    def item_updated(self, item):
+        return item.updated
+    
+    # TODO: Support the following `entry` tags
+    #def item_guid(self, item):
+    #def item_author(self, item):
+    #def item_category(self, item):
+    #def item_contributor(self, item):
+    # install django-licenses and add a fk
+    #def item_rights(self, item):
+    #    return "{0} {1} {2}".format(item.license.name, item.license.url,
+    #        datetime.date.today().year)
+    
 
-    #def item_pubdate(self, obj):
-    #    latest_post = Post.objects.filter(blog=obj).latest()
-    #    return latest_post.published
-
-
-class LatestPostAtomFeed(LatestPostRSSFeed):
+class LatestPostRSSFeed(LatestPostBaseFeed):
     """
-    Feed of the latest 10 posts.
+    RSS Feed of the latest 10 posts.
+    """
+    def docs(self):
+        return "http://blogs.law.harvard.edu/tech/rss"
+    
+    def item_description(self, obj):
+        return item.teaser
+
+    #def language(self, obj):
+
+class LatestPostAtomFeed(LatestPostBaseFeed):
+    """
+    Atom Feed of the latest 10 posts.
     """    
     feed_type = Atom1Feed
-    subtitle = LatestPostRSSFeed.description
+    
+    def subtitle(self, obj):
+        return obj.subtitle
+    
     def summary(self, obj):
-        return obj.description
+        return obj.teaser
