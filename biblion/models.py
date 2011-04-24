@@ -4,7 +4,7 @@ import urllib2
 from datetime import datetime
 
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -162,7 +162,7 @@ class Post(models.Model):
         """
         try:
             return self.revisions.latest("updated")
-        except IndexError:
+        except ObjectDoesNotExist:
             return None
     
     def as_tweet(self):
