@@ -1,6 +1,7 @@
 from django import template
+from django.shortcuts import get_object_or_404
 
-from biblion.models import Post
+from biblion.models import Blog, Post
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
 from biblion.utils.code_hilite import to_html
 
@@ -13,39 +14,24 @@ register.filter("to_html", to_html)
 
 class LatestBlogPostsNode(template.Node):
     
-    def __init__(self, context_var):
+    def __init__(self, blog_slug, quantity, context_var):
+        self.blog = get_object_or_404(Blog, slug=blog_slug)
+        self.quantity = quantity
         self.context_var = context_var
     
     def render(self, context):
-        latest_posts = Post.objects.current()[:5]
+        latest_posts = Post.objects.filter(blog=self.blog).current()[:self.quantity]
         context[self.context_var] = latest_posts
         return u""
 
 
 @register.tag
 def latest_blog_posts(parser, token):
+    """
+        {% latest_blog_posts blog.slug 1 as latest_blog_posts %}
+    """
     bits = token.split_contents()
-    return LatestBlogPostsNode(bits[2])
-
-
-class LatestBlogPostNode(template.Node):
-    
-    def __init__(self, context_var):
-        self.context_var = context_var
-    
-    def render(self, context):
-        try:
-            latest_post = Post.objects.current()[0]
-        except IndexError:
-            latest_post = None
-        context[self.context_var] = latest_post
-        return u""
-
-
-@register.tag
-def latest_blog_post(parser, token):
-    bits = token.split_contents()
-    return LatestBlogPostNode(bits[2])
+    return LatestBlogPostsNode(bits[1], int(bits[2]), bits[4])
 
 
 class LatestSectionPostNode(template.Node):
