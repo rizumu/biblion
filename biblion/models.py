@@ -29,7 +29,7 @@ from biblion.utils.fields import UUIDField
 
 class Blog(models.Model):
     
-    id = UUIDField(_("id"), primary_key=True)
+    uuid = UUIDField(_("id"), unique=True)
     
     site = models.ForeignKey(Site, related_name=_("blogs"), default=settings.SITE_ID, verbose_name=_("site"))
     
@@ -86,7 +86,7 @@ def ig(L, i):
 
 class Post(models.Model):
     
-    id = UUIDField(_("id"), primary_key=True)
+    uuid = UUIDField(_("id"), unique=True)
     
     blog = models.ForeignKey(Blog, related_name=_("posts"))
     
@@ -210,9 +210,9 @@ class Post(models.Model):
                 "slug": self.slug,
             }
         else:
-            name = "blog_post_pk"
+            name = "blog_post_uuid"
             kwargs = {
-                "post_pk": self.pk,
+                "post_uuid": self.uuid,
             }
         kwargs["blog_slug"] = self.blog.slug
         return reverse(name, kwargs=kwargs)

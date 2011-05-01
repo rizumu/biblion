@@ -59,7 +59,7 @@ class LatestPostBaseFeed(Feed):
         return "Django Web Framework"
     
     def guid(self, obj):
-        return obj.pk
+        return obj.uuid
     
     def copyright(self, obj):
         return "{0} {1} {2}".format(obj.license.name, obj.license.url,
@@ -107,7 +107,7 @@ class LatestPostBaseFeed(Feed):
         return item.updated
     
     def item_guid(self, item):
-        return item.pk
+        return item.uuid
     
     def item_copyright(self, item):
         return "{0} {1} {2}".format(item.license.name, item.license.url,

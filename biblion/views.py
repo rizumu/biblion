@@ -55,11 +55,10 @@ def blog_section_list(request, blog_slug, section):
 
 
 def blog_post_detail(request, blog_slug, **kwargs):
-    
-    if "post_pk" in kwargs:
+    if "post_uuid" in kwargs:
         if request.user.is_authenticated() and request.user.is_staff:
             queryset = Post.objects.all()
-            post = get_object_or_404(queryset, pk=kwargs["post_pk"])
+            post = get_object_or_404(queryset, uuid=kwargs["post_uuid"])
         else:
             raise Http404()
     else:
