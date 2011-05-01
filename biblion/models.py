@@ -20,6 +20,12 @@ except ImportError:
     twitter = None
 from licenses.fields import LicenseField
 
+if "taggit" in settings.INSTALLED_APPS:
+    from taggit.managers import TaggableManager
+else:
+    def TaggableManager():
+        return None
+
 from biblion.managers import BlogManager, PostManager
 from biblion.settings import ALL_SECTION_NAME, SECTIONS
 from biblion.utils.db import manager_from
@@ -65,6 +71,7 @@ class Blog(models.Model):
     
     objects = manager_from(BlogManager)
     on_site = CurrentSiteManager()
+    tags = TaggableManager()
     
     class Meta:
         ordering = ("site", "active", "title")
@@ -102,10 +109,10 @@ class Post(models.Model):
     
     authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"))
     contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
-
+    
     teaser = models.TextField(_("teaser"), editable=False)
     content = models.TextField(_("content"), editable=False)
-
+    
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
     license = LicenseField(related_name=_("posts"))
@@ -118,6 +125,7 @@ class Post(models.Model):
     comments = models.BooleanField(_("comments"), default=True)
     
     objects = manager_from(PostManager)
+    tags = TaggableManager()
     
     class Meta:
         get_latest_by = "published"

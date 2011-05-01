@@ -8,3 +8,4 @@ django-licenses==0.2.3
 
 # optional
 python-twitter==0.8.1
+django-taggit==0.9.3
