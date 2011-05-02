@@ -8,8 +8,8 @@ from biblion.settings import ALL_SECTION_NAME
 
 class BlogManager(object):
 
-    def active(self):
-        return self.exclude(active=None)
+    def published(self):
+        return self.exclude(published=None)
 
     def onsite(self):
         return self.filter(site=Site.objects.get_current())

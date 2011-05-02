@@ -1,9 +1,37 @@
 from datetime import datetime
 
 from django import forms
+from django.utils.translation import ugettext as _
 
-from biblion.models import Post, Revision
+from biblion.models import Blog, Post, Revision
 from biblion.utils.twitter import can_tweet
+
+
+class AdminBlogForm(forms.ModelForm):
+    
+    publish = forms.BooleanField(
+        required = False,
+        help_text = _("Checking this will publish this blog on the site"),
+    )
+    
+    class Meta:
+        model = Blog
+    
+    def save(self):
+        blog = super(AdminBlogForm, self).save(commit=False)
+        
+        if blog.pk is None:
+            if self.cleaned_data["publish"]:
+                blog.published = datetime.now()
+        else:
+            if Blog.objects.filter(pk=blog.pk, published=None).count():
+                if self.cleaned_data["publish"]:
+                    blog.published = datetime.now()
+
+        blog.updated = datetime.now()
+        blog.save()
+
+        return blog
 
 
 class AdminPostForm(forms.ModelForm):
@@ -31,13 +59,13 @@ class AdminPostForm(forms.ModelForm):
     )
     publish = forms.BooleanField(
         required = False,
-        help_text = u"Checking this will publish this articles on the site",
+        help_text = _("Checking this will publish this article on the site"),
     )
     
     if can_tweet():
         tweet = forms.BooleanField(
             required = False,
-            help_text = u"Checking this will send out a tweet for this post",
+            help_text = _("Checking this will send out a tweet for this post"),
         )
     
     class Meta:

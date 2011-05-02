@@ -67,14 +67,14 @@ class Blog(models.Model):
     
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
     updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)
-    active = models.BooleanField(_("active"), default=True)
+    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
     
     objects = manager_from(BlogManager)
     on_site = CurrentSiteManager()
     tags = TaggableManager()
     
     class Meta:
-        ordering = ("site", "active", "title")
+        ordering = ("site", "title")
         unique_together = ("title", "site")
         verbose_name = _("blog")
         verbose_name_plural = _("blogs")

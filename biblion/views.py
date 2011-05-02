@@ -14,12 +14,12 @@ from biblion.settings import ALL_SECTION_NAME
 
 def blog_list(request, site_id=None, **kwargs):
     """
-    All active blogs for a given site, current_site if unspecified.
+    All published blogs for a given site, current_site if unspecified.
     """
     if site_id == None:
-        blogs = Blog.objects.active().onsite()
+        blogs = Blog.objects.published().onsite()
     else:
-        blogs = Blog.objects.active().filter(id=site_id)
+        blogs = Blog.objects.published().filter(id=site_id)
     context = {
         "blogs": blogs,
         "posts": Post.objects.current().filter(blog__in=blogs),

@@ -3,18 +3,24 @@ from django.conf import settings
 from django.utils.functional import curry
 
 from biblion.models import Blog, Post, Image
-from biblion.forms import AdminPostForm
+from biblion.forms import AdminBlogForm, AdminPostForm
 from biblion.utils.twitter import can_tweet
 
 
 class BlogAdmin(admin.ModelAdmin):
-    list_display = ["title", "active_flag", "site"]
+    list_display = ["title", "published_flag", "site"]
     prepopulated_fields = {"slug": ("title",)}
-
-    def active_flag(self, obj):
-        return bool(obj.active)
-    active_flag.short_description = "Active"
-    active_flag.boolean = True
+    form = AdminBlogForm
+    
+    def published_flag(self, obj):
+        return bool(obj.published)
+    published_flag.short_description = "Published"
+    published_flag.boolean = True
+    
+    def save_form(self, request, form, change):
+        # this is done for explicitness that we want form.save to commit
+        # form.save doesn't take a commit kwarg for this reason
+        return form.save()
 
 
 class ImageInline(admin.TabularInline):
