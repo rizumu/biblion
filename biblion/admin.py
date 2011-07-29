@@ -64,7 +64,7 @@ class PostAdmin(admin.ModelAdmin):
     published_flag.boolean = True
     
     def formfield_for_dbfield(self, db_field, **kwargs):
-        request = kwargs["request"]
+        request = kwargs.get("request")
         if db_field.name == "authors":
             ff = super(PostAdmin, self).formfield_for_dbfield(db_field, **kwargs)
             ff.initial = [request.user.id]

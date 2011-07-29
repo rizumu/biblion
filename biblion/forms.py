@@ -1,10 +1,13 @@
 from datetime import datetime
 
 from django import forms
+from django.utils.functional import curry
 from django.utils.translation import ugettext as _
 
 from biblion.models import Blog, Post, Revision
+from biblion.settings import PARSER
 from biblion.utils.twitter import can_tweet
+from biblion.utils.loader import load_path_attr
 
 
 class AdminBlogForm(forms.ModelForm):
@@ -99,8 +102,10 @@ class AdminPostForm(forms.ModelForm):
                 if self.cleaned_data["publish"]:
                     post.published = datetime.now()
         
-        post.teaser = self.cleaned_data["teaser"]
-        post.content = self.cleaned_data["content"]
+        render_func = curry(load_path_attr(PARSER[0], **PARSER[1]))
+        
+        post.teaser = render_func(self.cleaned_data["teaser"])
+        post.content = render_func(self.cleaned_data["content"])
         post.updated = datetime.now()
         post.save()
         
@@ -112,7 +117,7 @@ class AdminPostForm(forms.ModelForm):
 
         r.updated = post.updated
         r.published = post.published
-        r.save() # must save to set pk before adding a m2m field
+        r.save()  # must save to set pk before adding a m2m field
         r.authors = post.authors.all()
         r.save()
         
