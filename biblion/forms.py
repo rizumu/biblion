@@ -30,10 +30,10 @@ class AdminBlogForm(forms.ModelForm):
             if Blog.objects.filter(pk=blog.pk, published=None).count():
                 if self.cleaned_data["publish"]:
                     blog.published = datetime.now()
-
+        
         blog.updated = datetime.now()
         blog.save()
-
+        
         return blog
 
 
@@ -86,11 +86,11 @@ class AdminPostForm(forms.ModelForm):
             # set initial data from the latest revision
             self.fields["teaser"].initial = latest_revision.teaser
             self.fields["content"].initial = latest_revision.content
-        
+            
             # @@@ can a post be unpublished then re-published? should be pulled
             # from latest revision maybe?
             self.fields["publish"].initial = bool(post.published)
-    
+
     def save(self):
         post = super(AdminPostForm, self).save(commit=False)
         
@@ -114,7 +114,7 @@ class AdminPostForm(forms.ModelForm):
         r.title = post.title
         r.teaser = self.cleaned_data["teaser"]
         r.content = self.cleaned_data["content"]
-
+        
         r.updated = post.updated
         r.published = post.published
         r.save()  # must save to set pk before adding a m2m field

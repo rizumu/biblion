@@ -62,15 +62,19 @@ class LatestPostBaseFeed(Feed):
         return obj.uuid
     
     def copyright(self, obj):
-        return "{0} {1} {2}".format(obj.license.name, obj.license.url,
-            datetime.date.today().year)
+        try:
+            import licenses
+            return "{0} {1} {2}".format(obj.license.name, obj.license.url,
+                datetime.date.today().year)
+        except ImportError:
+            return None
     
     def author_name(self, obj):
         return obj.authors.all()[0].get_full_name()
     
     def author_email(self, obj):
         return obj.authors.all()[0].email
-
+    
     # TODO: Support the following `feed` tags
     def author_email(self, obj):
         return None
@@ -141,7 +145,7 @@ class LatestPostRSSFeed(LatestPostBaseFeed):
 class LatestPostAtomFeed(LatestPostBaseFeed):
     """
     Atom Feed of the latest 10 posts.
-    """    
+    """
     feed_type = Atom1Feed
     
     def subtitle(self, obj):

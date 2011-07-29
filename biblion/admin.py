@@ -6,6 +6,11 @@ from biblion.models import Blog, Post, Image
 from biblion.forms import AdminBlogForm, AdminPostForm
 from biblion.utils.twitter import can_tweet
 
+try:
+    import licenses
+except ImportError:
+    licenses = None
+
 
 class BlogAdmin(admin.ModelAdmin):
     list_display = ["title", "published_flag", "site"]
@@ -28,7 +33,7 @@ class ImageInline(admin.TabularInline):
     fields = ["image_path"]
 
 
-class PostAdmin(admin.ModelAdmin):  
+class PostAdmin(admin.ModelAdmin):
     list_display = ["blog", "title", "published_flag", "section"]
     list_filter = ["section"]
     form = AdminPostForm
@@ -39,13 +44,14 @@ class PostAdmin(admin.ModelAdmin):
         "slug",
         "authors",
         "contributors",
-        "license",
         "teaser",
         "content",
         "markup_type",
         "publish",
         "comments",
     ]
+    if licenses:
+       fields.append("license")
     if can_tweet():
         fields.append("tweet_text")
     prepopulated_fields = {"slug": ("title",)}

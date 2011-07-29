@@ -18,7 +18,10 @@ try:
     import twitter
 except ImportError:
     twitter = None
-from licenses.fields import LicenseField
+try:
+    from licenses.models import LicenseField
+except ImportError:
+    LicenseField = None
 
 if "taggit" in settings.INSTALLED_APPS:
     from taggit.managers import TaggableManager
@@ -58,7 +61,8 @@ class Blog(models.Model):
         episode. URL should look like "http://feeds.feedburner.com/TitleOfShow".
         <a href="http://www.feedburner.com/fb/a/ping">Manually ping</a>"""))
     
-    license = LicenseField(related_name=_("blogs"))
+    if LicenseField:
+        license = LicenseField(related_name=_("blogs"))
     
     authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"))
     contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
@@ -67,7 +71,7 @@ class Blog(models.Model):
     
     created = models.DateTimeField(_("created"), default=datetime.now, editable=False)
     updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)
-    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
+    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)  # when last published
     
     objects = manager_from(BlogManager)
     on_site = CurrentSiteManager()
@@ -115,11 +119,12 @@ class Post(models.Model):
     
     tweet_text = models.CharField(_("tweet text"), max_length=140, editable=False)
     
-    license = LicenseField(related_name=_("posts"))
+    if LicenseField:
+        license = LicenseField(related_name=_("posts"))
     
-    created = models.DateTimeField(_("created"), default=datetime.now, editable=False) # when first revision was created
-    updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False) # when last revision was create (even if not published)
-    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False) # when last published
+    created = models.DateTimeField(_("created"), default=datetime.now, editable=False)  # when first revision was created
+    updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)  # when last revision was create (even if not published)
+    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)  # when last published
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
     comments = models.BooleanField(_("comments"), default=True)
