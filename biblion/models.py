@@ -19,7 +19,7 @@ try:
 except ImportError:
     twitter = None
 try:
-    from licenses.models import LicenseField
+    from licenses.fields import LicenseField
 except ImportError:
     LicenseField = None
 
