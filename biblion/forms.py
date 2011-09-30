@@ -4,6 +4,7 @@ from django import forms
 from django.utils.functional import curry
 from django.utils.translation import ugettext as _
 
+from biblion import signals
 from biblion.models import Blog, Post, Revision
 from biblion.settings import PARSER
 from biblion.utils.twitter import can_tweet
@@ -90,17 +91,14 @@ class AdminPostForm(forms.ModelForm):
             # @@@ can a post be unpublished then re-published? should be pulled
             # from latest revision maybe?
             self.fields["publish"].initial = bool(post.published)
-
+    
     def save(self):
         post = super(AdminPostForm, self).save(commit=False)
-        
-        if post.pk is None:
-            if self.cleaned_data["publish"]:
+        # only publish the first time publish has been checked
+        if (post.pk is None or Post.objects.filter(pk=post.pk, published=None).count()) \
+           and self.cleaned_data["publish"]:
                 post.published = datetime.now()
-        else:
-            if Post.objects.filter(pk=post.pk, published=None).count():
-                if self.cleaned_data["publish"]:
-                    post.published = datetime.now()
+                signals.post_published.send(sender=self, pk=post.pk)
         
         render_func = curry(load_path_attr(PARSER[0], **PARSER[1]))
         
