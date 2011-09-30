@@ -98,6 +98,7 @@ class AdminPostForm(forms.ModelForm):
         if (post.pk is None or Post.objects.filter(pk=post.pk, published=None).count()) \
            and self.cleaned_data["publish"]:
                 post.published = datetime.now()
+                post.save()  # must save before sending signal
                 signals.post_published.send(sender=self, pk=post.pk)
         
         render_func = curry(load_path_attr(PARSER[0], **PARSER[1]))
