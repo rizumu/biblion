@@ -25,7 +25,7 @@ def pygments_directive(name, arguments, options, content, lineno,
         lexer = get_lexer_by_name(arguments[0])
     except (ValueError, IndexError):
         # no lexer found - use the text one instead of an exception
-        lexer = TextLexer()    
+        lexer = TextLexer()
     parsed = highlight(u"\n".join(content), lexer, HtmlFormatter())
     return [nodes.raw("", parsed, format="html")]
 pygments_directive.arguments = (0, 1, False)
@@ -84,14 +84,14 @@ def to_html(obj):
     Markup filter that converts an object to html formatting.
     Syntax hiliting support for rst and markdown only.
     """
-    if obj.markup_type == 1: # HTML
+    if obj.markup_type == 1:  # HTML
         html = obj.content
-    elif obj.markup_type == 2: # Creole
+    elif obj.markup_type == 2:  # Creole
         html = creole_to_html(obj.content)
-    elif obj.markup_type == 3: # Markdown
+    elif obj.markup_type == 3:  # Markdown
         html = markdown_to_html(obj.content)
-    elif obj.markup_type == 4: # reStructuredText
+    elif obj.markup_type == 4:  # reStructuredText
         html = rst_to_html(obj.content)
-    elif obj.markup_type == 5: # Textile
+    elif obj.markup_type == 5:  # Textile
         html = textile_to_html(obj.content)
     return mark_safe(html)

@@ -31,7 +31,7 @@ def blog_list(request, site_id=None, **kwargs):
 
 def blog_detail(request, blog_slug):
     """ All published posts for a given blog. """
-   
+    
     blog = Blog.objects.get(slug=blog_slug)
     posts = Post.objects.current().filter(blog=blog).exclude(published=None)
     
@@ -64,9 +64,9 @@ def blog_post_detail(request, blog_slug, **kwargs):
     else:
         queryset = Post.objects.current()
         queryset = queryset.filter(
-            published__year = int(kwargs["year"]),
-            published__month = int(kwargs["month"]),
-            published__day = int(kwargs["day"]),
+            published__year=int(kwargs["year"]),
+            published__month=int(kwargs["month"]),
+            published__day=int(kwargs["day"]),
         )
         post = get_object_or_404(queryset, slug=kwargs["slug"])
         post.inc_views()

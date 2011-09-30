@@ -13,8 +13,8 @@ from biblion.utils.loader import load_path_attr
 class AdminBlogForm(forms.ModelForm):
     
     publish = forms.BooleanField(
-        required = False,
-        help_text = _("Checking this will publish this blog on the site"),
+        required=False,
+        help_text=_("Checking this will publish this blog on the site"),
     )
     
     class Meta:
@@ -40,35 +40,35 @@ class AdminBlogForm(forms.ModelForm):
 class AdminPostForm(forms.ModelForm):
     
     title = forms.CharField(
-        max_length = 90,
-        widget = forms.TextInput(
-            attrs = {"style": "width: 50%;"},
+        max_length=90,
+        widget=forms.TextInput(
+            attrs={"style": "width: 50%;"},
         ),
     )
     slug = forms.CharField(
-        widget = forms.TextInput(
-            attrs = {"style": "width: 50%;"},
+        widget=forms.TextInput(
+            attrs={"style": "width: 50%;"},
         )
     )
     teaser = forms.CharField(
-        widget = forms.Textarea(
-            attrs = {"style": "width: 80%;"},
+        widget=forms.Textarea(
+            attrs={"style": "width: 80%;"},
         ),
     )
     content = forms.CharField(
-        widget = forms.Textarea(
-            attrs = {"style": "width: 80%; height: 300px;"},
+        widget=forms.Textarea(
+            attrs={"style": "width: 80%; height: 300px;"},
         )
     )
     publish = forms.BooleanField(
-        required = False,
-        help_text = _("Checking this will publish this article on the site"),
+        required=False,
+        help_text=_("Checking this will publish this article on the site"),
     )
     
     if can_tweet():
         tweet = forms.BooleanField(
-            required = False,
-            help_text = _("Checking this will send out a tweet for this post"),
+            required=False,
+            help_text=_("Checking this will send out a tweet for this post"),
         )
     
     class Meta:

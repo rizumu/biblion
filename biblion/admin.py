@@ -51,7 +51,7 @@ class PostAdmin(admin.ModelAdmin):
         "comments",
     ]
     if licenses:
-       fields.append("license")
+        fields.append("license")
     if can_tweet():
         fields.append("tweet_text")
     prepopulated_fields = {"slug": ("title",)}
