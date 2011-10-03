@@ -44,7 +44,7 @@ class Blog(models.Model):
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    maintainers = models.ManyToManyField(User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"))
+    maintainers = models.ManyToManyField(User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"), null=True, blank=True)
     
     subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
         help_text="Looks best if only a few words, like a tagline.")
@@ -64,7 +64,7 @@ class Blog(models.Model):
     if LicenseField:
         license = LicenseField(related_name=_("blogs"))
     
-    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"))
+    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"), null=True, blank=True)
     contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
@@ -111,7 +111,7 @@ class Post(models.Model):
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
     
-    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"))
+    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"), null=True, blank=True)
     contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     teaser = models.TextField(_("teaser"), editable=False)
@@ -245,7 +245,7 @@ class Revision(models.Model):
     
     content = models.TextField(_("content"), )
     
-    authors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"))
+    authors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"), null=True, blank=True)
     contributors = models.ManyToManyField(User, related_name="revisions_contributorss", verbose_name=_("authors"), null=True, blank=True)
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
