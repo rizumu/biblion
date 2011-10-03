@@ -17,6 +17,13 @@ setup(
         "biblion.templatetags",
         "biblion.utils",
     ],
+    install_requires=[
+        "creole==1.2",
+        "docutils==0.8.1",
+        "Markdown==2.0.3",
+        "Pygments==1.4",
+        "textile==2.1.5",
+    ],
     package_data={
         "biblion": [
             "templates/biblion/*.xml",
