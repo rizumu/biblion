@@ -1,14 +1,11 @@
 from datetime import datetime
 
 from django import forms
-from django.utils.functional import curry
 from django.utils.translation import ugettext as _
 
 from biblion import signals
 from biblion.models import Blog, Post, Revision
-from biblion.settings import PARSER
 from biblion.utils.twitter import can_tweet
-from biblion.utils.loader import load_path_attr
 
 
 class AdminBlogForm(forms.ModelForm):
@@ -101,10 +98,8 @@ class AdminPostForm(forms.ModelForm):
                 post.save()  # must save before sending signal
                 signals.post_published.send(sender=self, pk=post.pk)
         
-        render_func = curry(load_path_attr(PARSER[0], **PARSER[1]))
-        
-        post.teaser = render_func(self.cleaned_data["teaser"])
-        post.content = render_func(self.cleaned_data["content"])
+        post.teaser = self.cleaned_data["teaser"]
+        post.content = self.cleaned_data["content"]
         post.updated = datetime.now()
         post.save()
         
