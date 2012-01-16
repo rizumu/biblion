@@ -104,6 +104,9 @@ class PostForm(forms.ModelForm):
         # grab the latest revision of the Post instance
         latest_revision = post.latest()
         
+        # filter only staff
+        self.fields["author"].queryset = User.objects.filter(is_staff=True)
+        
         if latest_revision:
             # set initial data from the latest revision
             self.fields["teaser"].initial = latest_revision.teaser
