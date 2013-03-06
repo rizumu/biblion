@@ -73,11 +73,10 @@ class LatestPostBaseFeed(Feed):
         return obj.authors.all()[0].get_full_name()
     
     def author_email(self, obj):
-        return obj.authors.all()[0].email
-    
-    # TODO: Support the following `feed` tags
-    def author_email(self, obj):
-        return None
+        try:
+            return obj.authors.all()[0].email
+        except:
+            return None
     
     def contributors(self, obj):
         return None
@@ -94,14 +93,11 @@ class LatestPostBaseFeed(Feed):
     def item_title(self, item):
         return item.title
     
-    def item_link(self, item):
-        # TODO: support hreflang
-        return item.get_absolute_url()
-    
     def content(self, item):
         return item.content
     
     def item_link(self, item):
+        # TODO: support hreflang
         return item.get_absolute_url()
     
     def item_pubdate(self, item):
