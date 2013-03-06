@@ -11,10 +11,22 @@ from biblion.utils.twitter import can_tweet
 
 
 class AdminBlogForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(AdminBlogForm, self).__init__(*args, **kwargs)
+        
+        self.fields["slug"].widget.attrs["readonly"] = True
     
     publish = forms.BooleanField(
         required=False,
         help_text=_("Checking this will publish this blog on the site"),
+    )
+    
+    slug = forms.CharField(
+        max_length=90,
+        widget=forms.TextInput(
+            attrs={"style": "width: 50%;"},
+        ),
     )
     
     class Meta:
@@ -46,9 +58,10 @@ class AdminPostForm(forms.ModelForm):
         ),
     )
     slug = forms.CharField(
+        max_length=90,
         widget=forms.TextInput(
             attrs={"style": "width: 50%;"},
-        )
+        ),
     )
     teaser = forms.CharField(
         required=False,
@@ -79,6 +92,8 @@ class AdminPostForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(AdminPostForm, self).__init__(*args, **kwargs)
+        
+        self.fields["slug"].widget.attrs["readonly"] = True
         
         post = self.instance
         
