@@ -1,4 +1,4 @@
 # optional
-python-twitter==0.8.1
+python-twitter==0.8.7
 django-licenses==0.2.3
 django-taggit==0.9.3
