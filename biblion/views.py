@@ -1,22 +1,16 @@
-from datetime import datetime
-
-from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
-from django.contrib.sites.models import Site
-
 from biblion.exceptions import InvalidSection
 from biblion.models import Blog, Post
-from biblion.settings import ALL_SECTION_NAME
 
 
 def blog_list(request, site_id=None, **kwargs):
     """
     All published blogs for a given site, current_site if unspecified.
     """
-    if site_id == None:
+    if site_id is None:
         blogs = Blog.objects.published().onsite()
     else:
         blogs = Blog.objects.published().filter(id=site_id)
@@ -25,8 +19,8 @@ def blog_list(request, site_id=None, **kwargs):
         "posts": Post.objects.current().filter(blog__in=blogs),
     }
     context.update(kwargs)
-    return render_to_response("biblion/blog_list.html", context,
-        context_instance=RequestContext(request))
+    return render_to_response(
+        "biblion/blog_list.html", context, context_instance=RequestContext(request))
 
 
 def blog_detail(request, blog_slug):

@@ -1,7 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 
 
-urlpatterns = patterns("",
+urlpatterns = patterns(
+    "",
+    
     url(r"^$",
         "biblion.views.blog_list", name="blog_list"),
     url(r"^(?P<blog_slug>[-\w]+)/$",

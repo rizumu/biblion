@@ -64,8 +64,8 @@ class LatestPostBaseFeed(Feed):
     def copyright(self, obj):
         try:
             import licenses
-            return "{0} {1} {2}".format(obj.license.name, obj.license.url,
-                datetime.date.today().year)
+            return "{0} {1} {2}".format(
+                obj.license.name, obj.license.url, datetime.date.today().year)
         except ImportError:
             return None
     
@@ -110,8 +110,8 @@ class LatestPostBaseFeed(Feed):
         return item.uuid
     
     def item_copyright(self, item):
-        return "{0} {1} {2}".format(item.license.name, item.license.url,
-            datetime.date.today().year)
+        return "{0} {1} {2}".format(
+            item.license.name, item.license.url, datetime.date.today().year)
     
     def item_author(self, item):
         return None

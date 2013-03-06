@@ -25,10 +25,8 @@ class HtmlEmitter(object):
     tree consisting of DocNodes.
     """
     
-    addr_re = re.compile("|".join([
-            Rules.extern,
-            Rules.interwiki,
-        ]), re.X | re.U)  # for addresses
+    addr_re = re.compile("|".join([Rules.extern, Rules.interwiki]),
+                         re.X | re.U)  # for addresses
     
     def __init__(self, root):
         self.root = root

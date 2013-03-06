@@ -40,14 +40,16 @@ class Blog(models.Model):
     
     uuid = UUIDField(_("id"), unique=True)
     
-    site = models.ForeignKey(Site, related_name=_("blogs"), default=settings.SITE_ID, verbose_name=_("site"))
+    site = models.ForeignKey(
+        Site, related_name=("blogs"), default=settings.SITE_ID, verbose_name=_("site"))
     
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
-    maintainers = models.ManyToManyField(User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"), null=True, blank=True)
+    maintainers = models.ManyToManyField(
+        User, related_name=_("blog_maintainers"), verbose_name=_("maintainers"), null=True, blank=True)
     
-    subtitle = models.CharField(_("subtitle"), max_length=255, blank=True,
-        help_text="Looks best if only a few words, like a tagline.")
+    subtitle = models.CharField(
+        _("subtitle"), max_length=255, blank=True, help_text="Looks best if only a few words, like a tagline.")
     description = models.TextField(_("description"), max_length=4000, help_text=_("""
         This is your chance to tell potential subscribers all about your blog.
         Describe your subject matter, media format, post schedule, and other
@@ -64,8 +66,10 @@ class Blog(models.Model):
     if LicenseField:
         license = LicenseField(related_name=_("blogs"))
     
-    authors = models.ManyToManyField(User, related_name=_("blog_authors"), verbose_name=_("authors"), null=True, blank=True)
-    contributors = models.ManyToManyField(User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
+    authors = models.ManyToManyField(
+        User, related_name=_("blog_authors"), verbose_name=_("authors"), null=True, blank=True)
+    contributors = models.ManyToManyField(
+        User, related_name=_("blog_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     posts_per_page = models.PositiveIntegerField(_("posts per page"), default=6)
     
@@ -111,8 +115,10 @@ class Post(models.Model):
     title = models.CharField(_("title"), max_length=90)
     slug = models.SlugField()
     
-    authors = models.ManyToManyField(User, related_name=_("post_authors"), verbose_name=_("authors"), null=True, blank=True)
-    contributors = models.ManyToManyField(User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
+    authors = models.ManyToManyField(
+        User, related_name=_("post_authors"), verbose_name=_("authors"), null=True, blank=True)
+    contributors = models.ManyToManyField(
+        User, related_name=_("post_contributors"), verbose_name=_("contributors"), null=True, blank=True)
     
     teaser = models.TextField(_("teaser"), editable=False)
     content = models.TextField(_("content"), editable=False)
@@ -122,9 +128,12 @@ class Post(models.Model):
     if LicenseField:
         license = LicenseField(related_name=_("posts"))
     
-    created = models.DateTimeField(_("created"), default=datetime.now, editable=False)  # when first revision was created
-    updated = models.DateTimeField(_("updated"), null=True, blank=True, editable=False)  # when last revision was create (even if not published)
-    published = models.DateTimeField(_("published"), null=True, blank=True, editable=False)  # when last published
+    created = models.DateTimeField(
+        _("created"), default=datetime.now, editable=False)  # when first revision was created
+    updated = models.DateTimeField(
+        _("updated"), null=True, blank=True, editable=False)  # when last revision was create (even if not published)
+    published = models.DateTimeField(
+        _("published"), null=True, blank=True, editable=False)  # when last published
     
     view_count = models.IntegerField(_("view count"), default=0, editable=False)
     comments = models.BooleanField(_("comments"), default=True)
@@ -207,7 +216,7 @@ class Post(models.Model):
             account.PostUpdate(self.as_tweet())
         else:
             raise ImproperlyConfigured("Unable to send tweet due to either "
-                "missing python-twitter or required settings.")
+                                       "missing python-twitter or required settings.")
     
     def save(self, **kwargs):
         self.updated_at = datetime.now()
@@ -245,8 +254,10 @@ class Revision(models.Model):
     
     content = models.TextField(_("content"), )
     
-    authors = models.ManyToManyField(User, related_name="revisions_authors", verbose_name=_("authors"), null=True, blank=True)
-    contributors = models.ManyToManyField(User, related_name="revisions_contributorss", verbose_name=_("authors"), null=True, blank=True)
+    authors = models.ManyToManyField(
+        User, related_name="revisions_authors", verbose_name=_("authors"), null=True, blank=True)
+    contributors = models.ManyToManyField(
+        User, related_name="revisions_contributors", verbose_name=_("authors"), null=True, blank=True)
     
     updated = models.DateTimeField(_("updated"), default=datetime.now)
     published = models.DateTimeField(_("published"), null=True, blank=True)

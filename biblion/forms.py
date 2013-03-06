@@ -92,11 +92,12 @@ class AdminPostForm(forms.ModelForm):
     def save(self):
         post = super(AdminPostForm, self).save(commit=False)
         # only publish the first time publish has been checked
-        if (post.pk is None or Post.objects.filter(pk=post.pk, published=None).count()) \
-           and self.cleaned_data["publish"]:
-                post.published = datetime.now()
-                post.save()  # must save before sending signal
-                signals.post_published.send(sender=self, pk=post.pk)
+        if (post.pk is None or
+                Post.objects.filter(pk=post.pk, published=None).count() and
+                self.cleaned_data["publish"]):
+            post.published = datetime.now()
+            post.save()  # must save before sending signal
+            signals.post_published.send(sender=self, pk=post.pk)
         
         post.teaser = self.cleaned_data["teaser"]
         post.content = self.cleaned_data["content"]

@@ -12,7 +12,6 @@ import textile
 
 from django.utils.safestring import mark_safe
 
-from mdx_codehilite import makeExtension
 from biblion.utils import creole_parser
 
 
@@ -52,7 +51,7 @@ class HTMLTranslator(html4css1.HTMLTranslator):
 
 def rst_to_html(value):
     parts = publish_parts(source=value, writer=HTMLWriter(),
-        settings_overrides={"initial_header_level": 2})
+                          settings_overrides={"initial_header_level": 2})
     return parts["fragment"]
 
 
@@ -60,7 +59,7 @@ def markdown_to_html(text):
     """
     Convert markdown to HTML with code hiliting
     """
-    return unicode(markdown.markdown(text, extensions=('codehilite',)))
+    return unicode(markdown.markdown(text, extensions=('codehilite')))
 
 
 def textile_to_html(text):
