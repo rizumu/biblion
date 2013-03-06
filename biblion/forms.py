@@ -1,6 +1,8 @@
 from datetime import datetime
 
 from django import forms
+from django.conf import settings
+from django.utils.text import truncate_html_words
 from django.utils.translation import ugettext as _
 
 from biblion import signals
@@ -49,6 +51,7 @@ class AdminPostForm(forms.ModelForm):
         )
     )
     teaser = forms.CharField(
+        required=False,
         widget=forms.Textarea(
             attrs={"style": "width: 80%;"},
         ),
@@ -60,7 +63,9 @@ class AdminPostForm(forms.ModelForm):
     )
     publish = forms.BooleanField(
         required=False,
-        help_text=_("Checking this will publish this article on the site"),
+        help_text=_("Checking this will publish this article on the site. "
+                    "You can not unpublish an article. If you have not entered "
+                    "a teaser, it will be created at this time."),
     )
     
     if can_tweet():
@@ -91,24 +96,34 @@ class AdminPostForm(forms.ModelForm):
     
     def save(self):
         post = super(AdminPostForm, self).save(commit=False)
-        # only publish the first time publish has been checked
-        if (post.pk is None or
-                Post.objects.filter(pk=post.pk, published=None).count() and
-                self.cleaned_data["publish"]):
-            post.published = datetime.now()
-            post.save()  # must save before sending signal
-            signals.post_published.send(sender=self, pk=post.pk)
         
-        post.teaser = self.cleaned_data["teaser"]
         post.content = self.cleaned_data["content"]
         post.updated = datetime.now()
+        
+        if ((post.pk is None or Post.objects.filter(pk=post.pk, published=None).count()) and
+                self.cleaned_data["publish"]):
+            first_publish = True
+            post.published = datetime.now()
+        else:
+            first_publish = False
+        
+        if first_publish and not self.cleaned_data["teaser"]:
+            post.teaser = truncate_html_words(
+                post.content, getattr(settings, "BIBLION_TEASER_WORDCOUNT", 60))
+        else:
+            post.teaser = self.cleaned_data["teaser"]
+        
         post.save()
+        
+        if first_publish:
+            # must save before sending signal
+            signals.post_published.send(sender=self, pk=post.pk)
         
         r = Revision()
         r.post = post
         r.title = post.title
-        r.teaser = self.cleaned_data["teaser"]
-        r.content = self.cleaned_data["content"]
+        r.teaser = post.teaser
+        r.content = post.content
         
         r.updated = post.updated
         r.published = post.published
